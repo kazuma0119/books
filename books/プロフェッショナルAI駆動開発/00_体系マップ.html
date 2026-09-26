@@ -1,0 +1,290 @@
+<title>プロフェッショナルAI駆動開発</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+:root{
+  --bg:#f4f6f8; --surface:#ffffff; --ink:#1b2230; --muted:#5b6475; --line:#dde2ea;
+  --x:#0f766e; --y:#b45309; --f:#4338ca; --r:#be185d; --base:#475569;
+  --x-soft:#e3f3f1; --y-soft:#fbefe2; --f-soft:#ebeafb; --r-soft:#fbe8f1; --base-soft:#eceff3;
+  --leaf:#15803d; --leaf-soft:#e7f5ec;
+  --sans:"Zen Kaku Gothic New","Hiragino Sans","Noto Sans JP",system-ui,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#11151c; --surface:#1a202a; --ink:#e7ebf1; --muted:#9aa4b5; --line:#2c3441;
+    --x:#5eead4; --y:#fbbf24; --f:#a5b4fc; --r:#f9a8d4; --base:#cbd5e1;
+    --x-soft:#15302e; --y-soft:#33260f; --f-soft:#23244a; --r-soft:#3a1a2a; --base-soft:#232a35;
+    --leaf:#86efac; --leaf-soft:#16301f;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#11151c; --surface:#1a202a; --ink:#e7ebf1; --muted:#9aa4b5; --line:#2c3441;
+  --x:#5eead4; --y:#fbbf24; --f:#a5b4fc; --r:#f9a8d4; --base:#cbd5e1;
+  --x-soft:#15302e; --y-soft:#33260f; --f-soft:#23244a; --r-soft:#3a1a2a; --base-soft:#232a35;
+  --leaf:#86efac; --leaf-soft:#16301f;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.75;padding-inline:16px;padding-block:24px 64px}
+.wrap{max-width:720px;margin-inline:auto;display:flex;flex-direction:column;gap:40px}
+h1,h2,h3{text-wrap:balance;line-height:1.35;margin:0}
+h1{font-size:26px;font-weight:700}
+h2{font-size:19px;font-weight:700}
+h3{font-size:16px;font-weight:700}
+p{margin:0}
+a{color:var(--f)}
+.eyebrow{font-size:12px;letter-spacing:.08em;color:var(--muted);font-weight:500}
+.meta{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:13px;color:var(--muted)}
+.status{display:inline-block;font-size:12px;font-weight:700;padding:2px 10px;border-radius:999px;background:var(--leaf-soft);color:var(--leaf)}
+header{display:flex;flex-direction:column;gap:12px}
+section{display:flex;flex-direction:column;gap:14px}
+
+/* formula */
+.formula{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:20px 16px;display:flex;flex-direction:column;gap:14px}
+.eq{font-family:var(--mono);font-weight:700;font-size:clamp(30px,9vw,44px);letter-spacing:.02em;text-align:center}
+.eq .y{color:var(--y)} .eq .f{color:var(--f)} .eq .x{color:var(--x)}
+.qa{display:grid;gap:10px}
+.qa div{display:grid;grid-template-columns:3.2em 1fr;gap:8px}
+.qa b{font-size:13px;color:var(--muted);padding-top:2px}
+.order{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:6px;font-family:var(--mono);font-size:13px}
+.order span.k{padding:2px 10px;border-radius:6px;font-weight:700}
+.k.x{background:var(--x-soft);color:var(--x)} .k.y{background:var(--y-soft);color:var(--y)} .k.f{background:var(--f-soft);color:var(--f)} .k.r{background:var(--r-soft);color:var(--r)}
+.loop{font-size:13px;color:var(--muted);text-align:center}
+
+/* skeleton tree */
+.tree{font-family:var(--sans);background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;overflow-x:auto}
+.tree ul{list-style:none;margin:0;padding-left:16px;border-left:2px solid var(--line)}
+.tree>ul{border-left:0;padding-left:0}
+.tree li{padding:3px 0 3px 10px;position:relative}
+.tree li li::before{content:"";position:absolute;left:-16px;top:15px;width:14px;border-top:2px solid var(--line)}
+.tree .ch{font-family:var(--mono);font-size:12px;color:var(--muted);margin-left:6px;white-space:nowrap}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;vertical-align:1px}
+
+/* pillars */
+.pillar{background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.pillar>.head{padding:14px 16px;display:flex;flex-direction:column;gap:4px;border-bottom:1px solid var(--line)}
+.pillar .tag{font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.04em}
+.pillar .claim{font-size:14px;color:var(--muted)}
+.pillar .body{padding:12px 16px 16px;display:flex;flex-direction:column;gap:12px}
+.p-base .head{background:var(--base-soft)} .p-base .tag{color:var(--base)}
+.p-x .head{background:var(--x-soft)} .p-x .tag{color:var(--x)}
+.p-y .head{background:var(--y-soft)} .p-y .tag{color:var(--y)}
+.p-f .head{background:var(--f-soft)} .p-f .tag{color:var(--f)}
+.p-r .head{background:var(--r-soft)} .p-r .tag{color:var(--r)}
+.chapters{display:flex;flex-direction:column;gap:8px}
+.chapter{display:grid;grid-template-columns:2.6em 1fr;gap:8px}
+.chapter .no{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--muted);padding-top:1px}
+.chapter .q{font-weight:700;font-size:14px}
+.chapter .a{font-size:14px;color:var(--muted)}
+
+/* leaves */
+.leaves{display:flex;flex-direction:column;gap:8px;border-top:1px dashed var(--line);padding-top:12px}
+.leaves-title{font-size:12px;font-weight:700;letter-spacing:.06em;color:var(--leaf)}
+.leaves .empty{font-size:13px;color:var(--muted)}
+.leaf{background:var(--leaf-soft);border-radius:8px;padding:10px 12px;display:flex;flex-direction:column;gap:4px}
+.leaf .when{font-family:var(--mono);font-size:11px;color:var(--muted)}
+.leaf .words{font-size:14px}
+.leaf .up{font-size:13px}
+.leaf .up b,.leaf .me b{color:var(--leaf);font-weight:700}
+.leaf .me{font-size:13px}
+
+/* tables & lists */
+.tbl{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:0}
+th{font-size:12px;color:var(--muted);font-weight:500;letter-spacing:.04em}
+td:first-child{font-weight:700;white-space:nowrap}
+.checks{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.checks li{display:grid;grid-template-columns:22px 1fr;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 12px}
+.checks .box{width:16px;height:16px;border:2px solid var(--muted);border-radius:4px;margin-top:5px}
+.checks li.done .box{background:var(--leaf);border-color:var(--leaf)}
+.checks .ref{font-family:var(--mono);font-size:12px;color:var(--muted);margin-left:4px}
+.checks .ans{display:block;font-size:13px;color:var(--leaf);margin-top:2px}
+.plan{display:grid;gap:10px}
+.plan div{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 12px}
+.plan b{display:block;font-size:13px;color:var(--muted);margin-bottom:2px}
+.plan ul{margin:0;padding-left:1.2em}
+.note{font-size:13px;color:var(--muted)}
+.revise{background:var(--surface);border:1px dashed var(--line);border-radius:10px;padding:14px 16px}
+</style>
+
+<div class="wrap">
+
+<header>
+  <span class="eyebrow">体系マップ ─ 読む前の骨格</span>
+  <h1>プロフェッショナルAI駆動開発</h1>
+  <div class="meta">
+    <span>松本淳太郎、サカモト（監修：金剛洙）</span>
+    <span>技術評論社｜2026-08-27｜288ページ</span>
+  </div>
+  <div class="meta">
+    <span class="status">体系化済</span>
+    <span>作成 2026-09-26</span>
+    <span>出典：<a href="https://gihyo.jp/book/2026/978-4-297-15788-3">技術評論社の書籍ページ</a></span>
+  </div>
+</header>
+
+<!-- 1. 一言でいうと -->
+<section>
+  <h2>一言でいうと</h2>
+  <div class="formula">
+    <div class="eq"><span class="y">Y</span> = <span class="f">F</span>(<span class="x">X</span>)</div>
+    <div class="qa">
+      <div><b>問い</b><p>AIの出力は毎回揺れる。それでも再現性のある開発をするには？</p></div>
+      <div><b>答え</b><p>開発を式で捉え、X→Y→Fの順に制御する。3つはAI相互レビューで守る。感覚から工学へ。</p></div>
+    </div>
+    <div class="order">
+      <span class="k x">X 入力</span>→<span class="k y">Y 判定</span>→<span class="k f">F モデル</span>＋<span class="k r">相互レビュー</span>
+    </div>
+    <p class="loop">核心：Yは次のXになる。良い出力は次の入力を良くし（好循環）、悪い出力は悪くする（悪循環）。</p>
+  </div>
+</section>
+
+<!-- 3. 骨格 -->
+<section>
+  <h2>全体の骨格</h2>
+  <div class="tree">
+    <ul><li><b>問い：揺れるAIで、再現性ある開発を</b>
+      <ul><li><b>答え：Y=F(X) を X→Y→F の順に制御</b>
+        <ul>
+          <li><span class="dot" style="background:var(--base)"></span>土台：なぜ失敗し、どう捉えるか<span class="ch">1〜2章</span></li>
+          <li><span class="dot" style="background:var(--x)"></span>柱1 X：入力を整える<span class="ch">3章</span></li>
+          <li><span class="dot" style="background:var(--y)"></span>柱2 Y：完成をテストで定義<span class="ch">4章</span></li>
+          <li><span class="dot" style="background:var(--f)"></span>柱3 F：編成で確率を上げる<span class="ch">5章</span></li>
+          <li><span class="dot" style="background:var(--r)"></span>柱4 関所：相互レビューで3軸を守る<span class="ch">6章</span></li>
+          <li><span class="dot" style="background:var(--leaf)"></span>実装：個人のフロー → 組織展開<span class="ch">7〜8章・付録</span></li>
+        </ul>
+      </li></ul>
+    </li></ul>
+  </div>
+  <p class="note">型：問題提起 → 枠組み → 解決策 → 実践</p>
+</section>
+
+<!-- 4. 柱ごとの章と枝葉 -->
+<section>
+  <h2>柱と章、そして枝葉</h2>
+  <p class="note">緑の「枝葉」は読んだ後のアウトプットで、送ってもらうたびに足していく。</p>
+
+  <article class="pillar p-base" id="base">
+    <div class="head"><span class="tag">土台</span><h3>なぜ失敗し、どう捉えるか</h3><p class="claim">失敗は必然。だから式で捉えて制御する</p></div>
+    <div class="body">
+      <div class="chapters">
+        <div class="chapter"><span class="no">1章</span><div><div class="q">なぜAI開発は失敗するか</div><div class="a">LLMの2つの癖で、失敗は必然になる</div></div></div>
+        <div class="chapter"><span class="no">2章</span><div><div class="q">開発をどう捉えるか</div><div class="a">Y=F(X)。制御はX→Y→Fの順。本の地図</div></div></div>
+      </div>
+      <div class="leaves" data-pillar="base"><span class="leaves-title">枝葉</span><p class="empty">まだなし</p></div>
+    </div>
+  </article>
+
+  <article class="pillar p-x" id="x">
+    <div class="head"><span class="tag">柱1 ─ X</span><h3>入力を整える</h3><p class="claim">AIの挙動はすべてXで決まる</p></div>
+    <div class="body">
+      <div class="chapters">
+        <div class="chapter"><span class="no">3章</span><div><div class="q">何をAIに渡すべきか</div><div class="a">コンテキストの7要素と品質の3原則。対策は実行前・実行時・実行後</div></div></div>
+      </div>
+      <div class="leaves" data-pillar="x"><span class="leaves-title">枝葉</span><p class="empty">まだなし</p></div>
+    </div>
+  </article>
+
+  <article class="pillar p-y" id="y">
+    <div class="head"><span class="tag">柱2 ─ Y</span><h3>完成をテストで定義する</h3><p class="claim">テストが「正解の定義」になり、速度と品質を両立させる</p></div>
+    <div class="body">
+      <div class="chapters">
+        <div class="chapter"><span class="no">4章</span><div><div class="q">完成をどう判定するか</div><div class="a">テストでAIが自走する。人の仕事は「定義」と「検収」へ</div></div></div>
+      </div>
+      <div class="leaves" data-pillar="y"><span class="leaves-title">枝葉</span><p class="empty">まだなし</p></div>
+    </div>
+  </article>
+
+  <article class="pillar p-f" id="f">
+    <div class="head"><span class="tag">柱3 ─ F</span><h3>編成で確率を上げる</h3><p class="claim">実装完了確率を「数」と「適材」で買う</p></div>
+    <div class="body">
+      <div class="chapters">
+        <div class="chapter"><span class="no">5章</span><div><div class="q">モデルをどう使うか</div><div class="a">並列実行とタスク割り当て。モデルは2つの問いで選ぶ</div></div></div>
+      </div>
+      <div class="leaves" data-pillar="f"><span class="leaves-title">枝葉</span><p class="empty">まだなし</p></div>
+    </div>
+  </article>
+
+  <article class="pillar p-r" id="review">
+    <div class="head"><span class="tag">柱4 ─ 関所</span><h3>AI相互レビューで3軸を守る</h3><p class="claim">テストだけでは足りない所をレビューが埋める</p></div>
+    <div class="body">
+      <div class="chapters">
+        <div class="chapter"><span class="no">6章</span><div><div class="q">テストで足りない所は何か</div><div class="a">3つの根を、観点・優先度・場面ごとのレビューで補う</div></div></div>
+      </div>
+      <div class="leaves" data-pillar="review"><span class="leaves-title">枝葉</span><p class="empty">まだなし</p></div>
+    </div>
+  </article>
+
+  <article class="pillar p-base" id="practice">
+    <div class="head"><span class="tag">実装</span><h3>個人のフロー → 組織展開</h3><p class="claim">そのまま真似できる手順とテンプレート</p></div>
+    <div class="body">
+      <div class="chapters">
+        <div class="chapter"><span class="no">7章</span><div><div class="q">実際にどう回すか</div><div class="a">リポジトリ設計と開発フローの8ステップ。筆者の失敗談</div></div></div>
+        <div class="chapter"><span class="no">8章</span><div><div class="q">組織にどう広げるか</div><div class="a">開発・リリース・運用の3段階ガバナンスと段階的導入</div></div></div>
+        <div class="chapter"><span class="no">付録</span><div><div class="q">そのまま使える物は</div><div class="a">テンプレート、プロンプト集、チェックリスト</div></div></div>
+      </div>
+      <div class="leaves" data-pillar="practice"><span class="leaves-title">枝葉</span><p class="empty">まだなし</p></div>
+    </div>
+  </article>
+</section>
+
+<!-- 5. キーワード -->
+<section>
+  <h2>キーワード</h2>
+  <div class="tbl"><table>
+    <thead><tr><th>言葉</th><th>この本での使い方</th></tr></thead>
+    <tbody>
+      <tr><td>Y = F(X)</td><td>X：入力、F：LLM、Y：出力</td></tr>
+      <tr><td>バイブコーディング</td><td>感覚任せのAI開発。1章でその代償を示す</td></tr>
+      <tr><td>LLMの2つの癖</td><td>①毎回出力が違う ②目の前のタスクにだけ最適化する</td></tr>
+      <tr><td>コンテキストエンジニアリング</td><td>Xを設計すること。定義は3.1</td></tr>
+      <tr><td>品質の3原則</td><td>鮮度・必要十分性・一貫性</td></tr>
+      <tr><td>実装完了確率</td><td>揺れを数字で扱うための指標</td></tr>
+      <tr><td>並列／割り当て</td><td>確率を「数」で買う／「適材」で買う</td></tr>
+      <tr><td>WHATは人間、HOWはAI</td><td>何を確かめるかは人が決める</td></tr>
+      <tr><td>単一ゴール最適化</td><td>テストだけでは足りない理由の1つ</td></tr>
+      <tr><td>プランドキュメント</td><td>8ステップの最初の介入点</td></tr>
+      <tr><td>テスト駆動リファクタリング</td><td>8ステップの最後の介入点</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- 6. 問い -->
+<section>
+  <h2>読みながら確かめる問い</h2>
+  <ul class="checks">
+    <li><span class="box"></span><span>LLMの「2つの癖」から、なぜ負債が膨らむのか？<span class="ref">1章</span></span></li>
+    <li><span class="box"></span><span>制御がなぜ X→Y→F の順なのか？<span class="ref">2.4</span></span></li>
+    <li><span class="box"></span><span>「コンテキストの7要素」とは何か？<span class="ref">3.2</span></span></li>
+    <li><span class="box"></span><span>従来のTDDと本書のTDDは何が違うか？<span class="ref">4.5</span></span></li>
+    <li><span class="box"></span><span>AIはどうやって「悪いテスト」を書くのか？どう防ぐか？<span class="ref">4.7</span></span></li>
+    <li><span class="box"></span><span>並列と割り当て、どちらで確率を買うかはどう決めるか？<span class="ref">5章</span></span></li>
+    <li><span class="box"></span><span>テストがあるのに、なぜレビューが要るのか？3つの根は？<span class="ref">6.2</span></span></li>
+    <li><span class="box"></span><span>8ステップで人間が入るのはどこか？<span class="ref">7.4</span></span></li>
+    <li><span class="box"></span><span>個人から組織に広げると何が崩れるか？<span class="ref">8.1</span></span></li>
+  </ul>
+</section>
+
+<!-- 2 & 7. 立ち位置と作戦 -->
+<section>
+  <h2>著者の立ち位置と読み方の作戦</h2>
+  <div class="plan">
+    <div><b>誰が書いたか</b>松本はAI/ML研究とMLエンジニアを経てSaaSを運営する起業家。自社SaaS開発の失敗談が土台。サカモトは外資IT企業のシニアエンジニア。</div>
+    <div><b>前提・偏り</b><ul><li>Web系のSaaS開発の視点</li><li>Claude Code中心の道具立て（7章）</li><li>「テストで判定できること」が前提</li></ul></div>
+    <div><b>じっくり読む</b><ul><li>2章：本の地図。骨格を確かめる</li><li>3・4・6章：手法の中心</li><li>7.5：実体験の失敗談</li></ul></div>
+    <div><b>流し読みでよい</b><ul><li>5.2〜5.4：LLMの仕組みの前提説明</li><li>付録：必要な時に引く辞書として</li><li>8章：組織に広げる立場でなければ軽めに</li></ul></div>
+    <div><b>自分に当てはめる所</b><ul><li>3.4・7.1：自分のCLAUDE.md・スキル・ルールの整え方</li><li>7.4：自分のAIへの頼み方を8ステップと比べる</li><li>付録「X→Y→Fの順に疑う」：出力がおかしい時の切り分け</li><li>このbooksリポジトリ自体も「Xを整える」実例になる</li></ul></div>
+  </div>
+</section>
+
+<section>
+  <h2>読後の修正</h2>
+  <div class="revise"><p class="note">読み終えて、骨格が違っていた所をここに書く。上の版は消さない。</p></div>
+</section>
+
+</div>

@@ -110,6 +110,17 @@ td:first-child{font-weight:700;white-space:nowrap}
 .plan ul{margin:0;padding-left:1.2em}
 .note{font-size:13px;color:var(--muted)}
 .revise{background:var(--surface);border:1px dashed var(--line);border-radius:10px;padding:14px 16px}
+
+/* summary */
+.story{display:flex;flex-direction:column;gap:0;background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.step{display:grid;grid-template-columns:28px 1fr;gap:12px;padding:16px;border-bottom:1px solid var(--line)}
+.step:last-child{border-bottom:0}
+.step .n{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-family:var(--mono);font-size:13px;font-weight:700;color:var(--surface)}
+.step .txt{display:flex;flex-direction:column;gap:8px;min-width:0}
+.step h3 .ch{font-family:var(--mono);font-size:12px;color:var(--muted);font-weight:500;margin-left:6px}
+.step p{font-size:14.5px}
+.step p.sub{font-size:13.5px;color:var(--muted)}
+.gist{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:10px;font-size:14.5px}
 </style>
 
 <div class="wrap">
@@ -141,6 +152,95 @@ td:first-child{font-weight:700;white-space:nowrap}
       <span class="k x">X 入力</span>→<span class="k y">Y 判定</span>→<span class="k f">F モデル</span>＋<span class="k r">相互レビュー</span>
     </div>
     <p class="loop">核心：Yは次のXになる。良い出力は次の入力を良くし（好循環）、悪い出力は悪くする（悪循環）。</p>
+  </div>
+</section>
+
+
+<!-- 全体の要約 -->
+<section id="summary">
+  <h2>全体の要約</h2>
+  <p class="note">目次と出版社の紹介文から組み立てた、本全体の論の流れ。細部は本文で確かめる。</p>
+
+  <div class="gist">
+    <p>AIに雰囲気で丸投げする開発は、現場で事故と負債を生んだ。原因はAIの出力が確率的に揺れることにある。</p>
+    <p>本書はこの揺れを「運が悪かった」で済ませない。開発を <b>Y = F(X)</b> という式で捉え、入力（X）・完成の判定（Y）・モデルの使い方（F）の3か所で制御する。3つはAI同士の相互レビューで守る。</p>
+    <p>そのうえで、個人がそのまま真似できる開発フローと、組織に広げる方法までを示す。副題のとおり「確率論から決定論へ」がこの本の一貫した主張。</p>
+  </div>
+
+  <div class="story">
+    <div class="step">
+      <span class="n" style="background:var(--base)">1</span>
+      <div class="txt">
+        <h3>問題：失敗は必然である<span class="ch">1章</span></h3>
+        <p>AIで開発するのは当たり前になった。しかし感覚任せの「バイブコーディング」は、本番の事故や「動くが誰も理解していないコード」を生んだ。書く時間は減ったが、確かめる時間が増えた。</p>
+        <p>原因はLLMの2つの癖。同じ指示でも出力が毎回違う。目の前のタスクにしか最適化しない。その結果、誰にも気づかれない負債が返済されずに増えていく。渦中にいると気づけない。</p>
+        <p class="sub">→ だから感覚ではなく、工学として扱う必要がある。</p>
+      </div>
+    </div>
+    <div class="step">
+      <span class="n" style="background:var(--base)">2</span>
+      <div class="txt">
+        <h3>枠組み：開発を Y = F(X) で捉える<span class="ch">2章</span></h3>
+        <p>X はAIへの入力、F はLLM、Y は出力。この式の要点は「Yは次のXになる」こと。AIが書いたコードは、次の作業でAIが読む入力になる。</p>
+        <p>良い出力は次の入力を良くして好循環に入る。悪い出力は次の入力を汚して悪循環に落ちる。本書はこの差を「実装完了確率」で数字として示す。</p>
+        <p>制御する順番は X → Y → F。以降の章はこの順に並ぶ。</p>
+        <p class="sub">→ なぜこの順番なのかは2.4で確かめる。</p>
+      </div>
+    </div>
+    <div class="step">
+      <span class="n" style="background:var(--x)">3</span>
+      <div class="txt">
+        <h3>X を制御する：コンテキストエンジニアリング<span class="ch">3章</span></h3>
+        <p>AIは与えられた情報がすべて。挙動はXで決まる。大事なのはプロンプト1つではなく、AIが読むコンテキスト全体。量より効率が問われる。</p>
+        <p>コンテキストには7つの要素がある。品質の原則は3つ（鮮度・必要十分性・一貫性）。</p>
+        <p>守り方は3つの時点に分かれる。実行前はルール・コード・ドキュメント・スキル・外部接続・対話履歴を整える。実行時はプロンプトを書き、サブエージェントで分割する。実行後はリファクタリングで衛生を保つ。</p>
+      </div>
+    </div>
+    <div class="step">
+      <span class="n" style="background:var(--y)">4</span>
+      <div class="txt">
+        <h3>Y を制御する：テスト駆動開発<span class="ch">4章</span></h3>
+        <p>出力が揺れる以上、判定は省けない。人が判定すると速度が頭打ちになり、判定を省くと品質が崩れる。このトレードオフをテストが解く。</p>
+        <p>テストは「正解の定義」。機械は速く、何度でも、ぶれずに判定できる。AIは「テストが通りました」まで自走し、人の仕事は「定義」と「検収」に変わる。人の目はもう全コードを追えないので、テストが品質保証の本体になる。</p>
+        <p>ただしAIはテストを「通すこと」に最適化し、悪いテストを書く。だから何を確かめるか（WHAT）は人が決め、どう書くか（HOW）はAIに任せる。書いたテストは、AIが次に読むコンテキスト（X）にもなる。</p>
+      </div>
+    </div>
+    <div class="step">
+      <span class="n" style="background:var(--f)">5</span>
+      <div class="txt">
+        <h3>F を制御する：LLMオーケストレーション<span class="ch">5章</span></h3>
+        <p>前提は3つ。LLMは仕組み上揺れる。モデルには得意不得意がある。賢さはお金で買えるが高い。</p>
+        <p>揺れは実装完了確率として数字で扱い、最小のコストで上げる。方法は2つ。並列に何本も走らせて確率を「数」で買う。タスクごとに合うモデルやサブエージェントを割り当てて「適材」で買う。</p>
+        <p>並列が成り立つのは、テストで当たりを判定できるから。モデルの編成が Y = F(X) の好循環を回す。</p>
+      </div>
+    </div>
+    <div class="step">
+      <span class="n" style="background:var(--r)">6</span>
+      <div class="txt">
+        <h3>関所：AIによる相互レビュー<span class="ch">6章</span></h3>
+        <p>テストだけでは足りない根が3つある。AIは1つのゴールだけに最適化する。テストは点でしか確かめられない。自分で書いたものを自分でレビューするには限界がある。</p>
+        <p>そこで別のAIにレビューさせ、X・Y・Fの3軸を同時に守る。観点を言葉にし、優先度を3段階で決め、テストコードそのものもレビューする。指摘と修正が往復し続ける「振動」は止め、人のレビューとの境界を引く。</p>
+        <p class="sub">使う場面：プルリクエスト、設計ドキュメント、セキュリティ専門のレビュー。</p>
+      </div>
+    </div>
+    <div class="step">
+      <span class="n" style="background:var(--leaf)">7</span>
+      <div class="txt">
+        <h3>実装：個人の開発フロー<span class="ch">7章</span></h3>
+        <p>ここまでの手法を、日々の手順に落とす。まずリポジトリを整える。Git を安全網にし、CLAUDE.md などのAI向けREADME・ルール・スキル・要件定義を置く。次にテストの土台を作り、並列実行の仕組み（ローカルとクラウド）を組む。</p>
+        <p>中心は8ステップのフロー。プランを作り、AIに2回レビューさせ、実装し、テストを全部通し、実装をAIにレビューさせ、人がレビューし、最後にテスト駆動でリファクタリングする。最初のプランと最後のリファクタリングが、人が介入する前後の関所になる。</p>
+        <p class="sub">筆者の失敗談5つ（AIが書いたテストに騙された、レビューしすぎて毒になった など）で裏づける。</p>
+      </div>
+    </div>
+    <div class="step">
+      <span class="n" style="background:var(--leaf)">8</span>
+      <div class="txt">
+        <h3>展開：組織に広げる<span class="ch">8章・付録</span></h3>
+        <p>個人でうまくいっても、組織では崩れる所がある。そこで開発・リリース・運用の3段階でガバナンスをかける。開発ではXのルールと3層レビュー、リリースではフィーチャーフラグと段階リリース、運用では監視とLLMによる異常検知。</p>
+        <p>導入は組織変革であり、心理的な抵抗がある。伴走するチームを置き、成功事例をテンプレートにして広げる。経営層は投資対効果で動かすが、原動力はリーダーの意志。</p>
+        <p class="sub">付録に、そのまま使えるテンプレート・プロンプト・チェックリストがある。</p>
+      </div>
+    </div>
   </div>
 </section>
 
